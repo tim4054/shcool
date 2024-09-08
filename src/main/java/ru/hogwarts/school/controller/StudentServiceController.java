@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Student;
@@ -8,7 +10,8 @@ import ru.hogwarts.school.service.StudentService;
 import java.util.List;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("/student")
+@Tag(name = "Контроллер студентов")
 public class StudentServiceController {
     private final StudentService service;
 
@@ -16,32 +19,41 @@ public class StudentServiceController {
         this.service = service;
     }
 
-    @PostMapping()
+    @PostMapping("/add")
+    @Operation(summary = "Добавление студента",
+            description = "Id проставляется из счетчика")
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
         Student createdStudent = service.createStudent(student);
         return ResponseEntity.ok(createdStudent);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Student> getStudent(@PathVariable Long id) {
-        Student findStudent = service.getStudentById(id);
-        if (findStudent == null) {
+    @GetMapping("/{id}")
+    @Operation(summary = "Поиск студента",
+            description = "Поиск по Id")
+    public ResponseEntity<Student> findStudentById(@PathVariable Long id) {
+        Student findStudentById = service.findStudent(id);
+        if (findStudentById == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(findStudent);
+        return ResponseEntity.ok(findStudentById);
     }
 
-    @PutMapping()
-    public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
-        Student updatedStudent = service.updateStudent(student.getId(), student);
+    @PutMapping("/{id}")
+    @Operation(summary = "Редактирование студента",
+            description = "Редактирование по Id")
+    public ResponseEntity<Student> updateStudent(@PathVariable long id,
+                                                 @RequestBody Student student) {
+        Student updatedStudent = service.updateStudent(id, student);
         if (updatedStudent == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedStudent);
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Student> deleteStudent(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Удаление студента",
+            description = "Удаление по Id")
+    public ResponseEntity<Student> deleteStudent(@PathVariable long id) {
         Student deletedStudent = service.deleteStudent(id);
         if (deletedStudent == null) {
             return ResponseEntity.notFound().build();
@@ -49,8 +61,10 @@ public class StudentServiceController {
         return ResponseEntity.ok(deletedStudent);
     }
 
-    @GetMapping("{age}")
-    public ResponseEntity<List<Student>> getStudentsByAge(@PathVariable Long age) {
+    @GetMapping("/get-by-age/{age}")
+    @Operation(summary = "Поиск студентов по возрасту",
+            description = "Показывает всех студентов, соответсвующих возрасту запроса")
+    public ResponseEntity<List<Student>> getAllStudentsByAge(@PathVariable long age) {
         List<Student> findStudents = service.getStudentsByAge(age);
         if (findStudents == null) {
             return ResponseEntity.notFound().build();
