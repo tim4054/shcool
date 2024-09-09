@@ -54,7 +54,7 @@ public class FacultyServiceController {
     @Operation(summary = "Удаление факультета",
             description = "Удаление по Id")
     public ResponseEntity<Faculty> deleteFaculty(@PathVariable long id) {
-        Faculty deletedfaculty = service.deleteStudent(id);
+        Faculty deletedfaculty = service.deleteFaculty(id);
         if (deletedfaculty == null) {
             return ResponseEntity.notFound().build();
         }

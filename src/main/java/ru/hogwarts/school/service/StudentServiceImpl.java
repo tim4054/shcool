@@ -36,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getStudentsByAge(Long age) {
+    public List<Student> getStudentsByAge(int age) {
         return students.values()
                 .stream()
                 .filter(x -> x.getAge() == age)

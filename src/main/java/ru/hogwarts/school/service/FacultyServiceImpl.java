@@ -32,7 +32,7 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Faculty deleteStudent(long id) {
+    public Faculty deleteFaculty(long id) {
         return faculties.remove(id);
     }
 
