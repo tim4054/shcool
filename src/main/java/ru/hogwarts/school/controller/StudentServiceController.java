@@ -21,7 +21,7 @@ public class StudentServiceController {
 
     @PostMapping("/add")
     @Operation(summary = "Добавление студента",
-            description = "Id проставляется из счетчика")
+            description = "Id проставляется из репозитория")
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
         Student createdStudent = service.createStudent(student);
         return ResponseEntity.ok(createdStudent);
@@ -41,24 +41,16 @@ public class StudentServiceController {
     @PutMapping("/{id}")
     @Operation(summary = "Редактирование студента",
             description = "Редактирование по Id")
-    public ResponseEntity<Student> updateStudent(@PathVariable long id,
-                                                 @RequestBody Student student) {
-        Student updatedStudent = service.updateStudent(id, student);
-        if (updatedStudent == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updatedStudent);
+    public Student updateStudent(@PathVariable long id,
+                                 @RequestBody Student studentForUpdate) {
+        return service.updateStudent(id, studentForUpdate);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление студента",
             description = "Удаление по Id")
-    public ResponseEntity<Student> deleteStudent(@PathVariable long id) {
-        Student deletedStudent = service.deleteStudent(id);
-        if (deletedStudent == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(deletedStudent);
+    public Student deleteStudent(@PathVariable long id) {
+        return service.deleteStudent(id);
     }
 
     @GetMapping("/get-by-age/{age}")

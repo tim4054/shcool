@@ -2,19 +2,33 @@ package ru.hogwarts.school.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
+@ExtendWith(MockitoExtension.class)
 class FacultyServiceImplTest {
-    private final FacultyServiceImpl service = new FacultyServiceImpl();
+    @InjectMocks
+    private FacultyServiceImpl service;
+
+    @Mock
+    private FacultyRepository facultyRepository;
 
     @Test
     @DisplayName("Добавление факультета")
     void createFaculty() {
-        Faculty expected = new Faculty("Gryffindor", "Red");
+        Faculty expected = new Faculty("Gryffindor", "Green");
+        when(facultyRepository.save(new Faculty("Gryffindor", "Green"))).thenReturn(expected);
 
         //test
         Faculty actual = service.createFaculty(expected);
@@ -26,8 +40,9 @@ class FacultyServiceImplTest {
     @Test
     @DisplayName("Нахождение факультета")
     void findFaculty() {
-        Faculty faculty = new Faculty("Gryffindor", "Red");
-        Faculty expected = service.createFaculty(faculty);
+        Faculty expected = new Faculty("Gryffindor", "Green");
+        expected.setId(1L);
+        when(facultyRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
 
         //test
         Faculty actual = service.findFaculty(expected.getId());
@@ -39,12 +54,16 @@ class FacultyServiceImplTest {
     @Test
     @DisplayName("Изменение факультета")
     void updateFaculty() {
-        Faculty Faculty = new Faculty("Gryffindor", "Red");
-        Faculty savedFaculty = service.createFaculty(Faculty);
+        Faculty faculty = new Faculty("Gryffindor", "Green");
+        faculty.setId(1L);
+        when(facultyRepository.existsById(faculty.getId())).thenReturn(true);
+        service.createFaculty(faculty);
+
         Faculty expected = new Faculty("Slytherin", "Green");
+        when(facultyRepository.save(expected)).thenReturn(expected);
 
         //test
-        Faculty actual = service.updateFaculty(savedFaculty.getId(), expected);
+        Faculty actual = service.updateFaculty(faculty.getId(), expected);
 
         //check
         assertThat(expected).isEqualTo(actual);
@@ -53,15 +72,18 @@ class FacultyServiceImplTest {
     @Test
     @DisplayName("Удаление факультета")
     void deleteFaculty() {
-        Faculty faculty = new Faculty("Gryffindor", "Red");
-        Faculty expected = service.createFaculty(faculty);
+        Faculty faculty = new Faculty("Gryffindor", "Green");
+        faculty.setId(1L);
+
+        when(facultyRepository.findById(faculty.getId())).thenReturn(Optional.of(faculty));
+
+        doNothing().when(facultyRepository).delete(faculty);
 
         //test
-        Faculty actual = service.deleteFaculty(expected.getId());
+        Faculty actual = service.deleteFaculty(faculty.getId());
 
         //check
-        assertThat(expected).isEqualTo(actual);
-        assertThat(service.findFaculty(expected.getId())).isNull();
+        verify(facultyRepository, times(1)).delete(faculty);
     }
 
     @Test
@@ -70,8 +92,8 @@ class FacultyServiceImplTest {
         String color = "Red";
         Faculty expected = new Faculty("Gryffindor", "Red");
         Faculty expected2 = new Faculty("Gryffindor1", "Red");
-        service.createFaculty(expected);
-        service.createFaculty(expected2);
+
+        when(facultyRepository.findAll()).thenReturn(List.of(expected, expected2));
 
         //test
         List<Faculty> actual = service.getFacultiesByColor(color);

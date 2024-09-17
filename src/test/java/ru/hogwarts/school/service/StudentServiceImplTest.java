@@ -2,19 +2,33 @@ package ru.hogwarts.school.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class StudentServiceImplTest {
-    private final StudentServiceImpl service = new StudentServiceImpl();
+
+    @InjectMocks
+    private StudentServiceImpl service;
+
+    @Mock
+    private StudentRepository studentRepository;
 
     @Test
     @DisplayName("Добавление студента")
     void createStudent() {
         Student expected = new Student("Garry", 18);
+        when(studentRepository.save(new Student("Garry", 18))).thenReturn(expected);
 
         //test
         Student actual = service.createStudent(expected);
@@ -26,8 +40,9 @@ class StudentServiceImplTest {
     @Test
     @DisplayName("Нахождение студента")
     void findStudent() {
-        Student student = new Student("Garry", 18);
-        Student expected = service.createStudent(student);
+        Student expected = new Student("Garry", 18);
+        expected.setId(1L);
+        when(studentRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
 
         //test
         Student actual = service.findStudent(expected.getId());
@@ -40,11 +55,15 @@ class StudentServiceImplTest {
     @DisplayName("Изменение студента")
     void updateStudent() {
         Student student = new Student("Garry", 18);
-        Student savedStudent = service.createStudent(student);
+        student.setId(1L);
+        when(studentRepository.existsById(student.getId())).thenReturn(true);
+        service.createStudent(student);
+
         Student expected = new Student("Ron", 19);
+        when(studentRepository.save(expected)).thenReturn(expected);
 
         //test
-        Student actual = service.updateStudent(savedStudent.getId(), expected);
+        Student actual = service.updateStudent(student.getId(), expected);
 
         //check
         assertThat(expected).isEqualTo(actual);
@@ -54,14 +73,17 @@ class StudentServiceImplTest {
     @DisplayName("Удаление студента")
     void deleteStudent() {
         Student student = new Student("Garry", 18);
-        Student expected = service.createStudent(student);
+        student.setId(1L);
+
+        when(studentRepository.findById(student.getId())).thenReturn(Optional.of(student));
+
+        doNothing().when(studentRepository).delete(student);
 
         //test
-        Student actual = service.deleteStudent(expected.getId());
+        Student actual = service.deleteStudent(student.getId());
 
         //check
-        assertThat(expected).isEqualTo(actual);
-        assertThat(service.findStudent(expected.getId())).isNull();
+        verify(studentRepository, times(1)).delete(student);
     }
 
     @Test
@@ -70,8 +92,8 @@ class StudentServiceImplTest {
         int age = 18;
         Student expected = new Student("Garry", 18);
         Student expected2 = new Student("Germiona", 18);
-        service.createStudent(expected);
-        service.createStudent(expected2);
+
+        when(studentRepository.findAll()).thenReturn(List.of(expected, expected2));
 
         //test
         List<Student> actual = service.getStudentsByAge(age);

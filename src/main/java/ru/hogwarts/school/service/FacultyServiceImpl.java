@@ -1,44 +1,52 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.Exception.FacultyNotFoundException;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @Service
 public class FacultyServiceImpl implements FacultyService {
-    private static long id = 1;
-    private final Map<Long, Faculty> faculties = new HashMap<>();
+    private final FacultyRepository facultyRepository;
+
+    public FacultyServiceImpl(FacultyRepository facultyRepository) {
+        this.facultyRepository = facultyRepository;
+    }
 
     @Override
     public Faculty createFaculty(Faculty faculty) {
-        faculty.setId(id++);
-        faculties.put(faculty.getId(), faculty);
-        return faculty;
+        return facultyRepository.save(faculty);
     }
 
     @Override
     public Faculty findFaculty(long id) {
-        return faculties.get(id);
+        return facultyRepository.findById(id).orElseThrow(() -> new FacultyNotFoundException(id));
     }
 
     @Override
-    public Faculty updateFaculty(long id, Faculty faculty) {
-        faculty.setId(id);
-        faculties.put(id, faculty);
-        return faculty;
+    public Faculty updateFaculty(long id, Faculty facultyForUpdate) {
+        if (!facultyRepository.existsById(id)) {
+            throw new FacultyNotFoundException(id);
+        }
+        facultyForUpdate.setId(id);
+        return facultyRepository.save(facultyForUpdate);
     }
 
     @Override
     public Faculty deleteFaculty(long id) {
-        return faculties.remove(id);
+        Faculty facultyForDelete = facultyRepository.findById(id).orElseThrow(() -> new FacultyNotFoundException(id));
+        facultyRepository.delete(facultyForDelete);
+        return facultyForDelete;
     }
 
     @Override
     public List<Faculty> getFacultiesByColor(String color) {
-        return faculties.values()
+        return facultyRepository.findAll()
                 .stream()
                 .filter(x -> x.getColor().equals(color))
                 .toList();

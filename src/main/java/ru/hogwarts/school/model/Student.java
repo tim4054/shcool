@@ -1,11 +1,17 @@
 package ru.hogwarts.school.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 import java.util.Objects;
 
+@Entity
 public class Student {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Id
+    @GeneratedValue
     private Long id;
     private String name;
     private int age;
@@ -13,6 +19,9 @@ public class Student {
     public Student( String name, int age) {
         this.name = name;
         this.age = age;
+    }
+
+    public Student() {
     }
 
     public Long getId() {

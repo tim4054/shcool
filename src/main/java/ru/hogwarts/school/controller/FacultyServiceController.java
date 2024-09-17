@@ -21,7 +21,7 @@ public class FacultyServiceController {
 
     @PostMapping("/add")
     @Operation(summary = "Добавление факультета",
-            description = "Id проставляется из счетчика")
+            description = "Id проставляется из репозитория")
     public ResponseEntity<Faculty> createFaculty(@RequestBody Faculty faculty) {
         Faculty createdFaculty = service.createFaculty(faculty);
         return ResponseEntity.ok(createdFaculty);
@@ -41,24 +41,16 @@ public class FacultyServiceController {
     @PutMapping("/{id}")
     @Operation(summary = "Редактирование факультета",
             description = "Редактирование по Id")
-    public ResponseEntity<Faculty> updateFaculty(@PathVariable long id,
-                                                 @RequestBody Faculty faculty) {
-        Faculty updatedfaculty = service.updateFaculty(id, faculty);
-        if (updatedfaculty == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updatedfaculty);
+    public Faculty updateFaculty(@PathVariable long id,
+                                 @RequestBody Faculty faculty) {
+        return service.updateFaculty(id, faculty);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление факультета",
             description = "Удаление по Id")
-    public ResponseEntity<Faculty> deleteFaculty(@PathVariable long id) {
-        Faculty deletedfaculty = service.deleteFaculty(id);
-        if (deletedfaculty == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(deletedfaculty);
+    public Faculty deleteFaculty(@PathVariable long id) {
+        return service.deleteFaculty(id);
     }
 
     @GetMapping("/get-by-color/{color}")
