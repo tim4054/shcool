@@ -7,7 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,9 @@ class FacultyServiceImplTest {
 
     @Mock
     private FacultyRepository facultyRepository;
+
+    @Mock
+    private StudentRepository studentRepository;
 
     @Test
     @DisplayName("Добавление факультета")
@@ -101,4 +106,40 @@ class FacultyServiceImplTest {
         //check
         assertThat(actual).containsAll(List.of(expected, expected2));
     }
+
+    @Test
+    @DisplayName("Поиск факультета по цвету или названию")
+    void findFacultyByColorOrName() {
+        String name = "Gryffindor";
+        String color = "Red";
+        Faculty expected = new Faculty(name, color);
+
+        when(facultyRepository.findByColorIgnoreCaseOrNameIgnoreCase(color, name)).thenReturn(List.of(expected));
+
+        //test
+        List<Faculty> actual = service.findFacultyByColorOrName(color, name);
+
+        //check
+        assertThat(actual).containsAll(List.of(expected));
+    }
+
+    @Test
+    @DisplayName("Поиск всех студентов по id факультета")
+    void findStudentsByFaculty() {
+        Faculty gryffindor = new Faculty("Gryffindor", "Red");
+        gryffindor.setId(1L);
+        Student student1 = new Student("Garry", 18);
+        student1.setFaculty(gryffindor);
+        Student student2 = new Student("Ron", 19);
+        student2.setFaculty(gryffindor);
+
+        when(studentRepository.findByFacultyId(gryffindor.getId())).thenReturn(List.of(student1, student2));
+
+        //test
+        List<Student> actual = service.findStudentsByFaculty(gryffindor.getId());
+
+        //check
+        assertThat(actual).containsAll(List.of(student1, student2));
+    }
+
 }

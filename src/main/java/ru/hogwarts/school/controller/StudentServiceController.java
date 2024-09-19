@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -62,5 +63,20 @@ public class StudentServiceController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(findStudents);
+    }
+
+    @GetMapping("/get-by-age-between")
+    @Operation(summary = "Поиск студентов по возрастному инетервалу",
+            description = "Показывает всех студентов, соответсвующих возрастному инетервалу запроса")
+    public List<Student> findByAgeBetween(@RequestParam(name = "Минимальный возраст") int minAge,
+                                          @RequestParam(name = "Максимальный возраст") int maxAge) {
+        return service.findByAgeBetween(minAge, maxAge);
+    }
+
+    @GetMapping("/{id}/get-faculty")
+    @Operation(summary = "Возвращает факультет студента",
+            description = "По id студента возвращает факультет")
+    public Faculty getFaculty(@PathVariable long id) {
+        return service.getFaculty(id);
     }
 }
