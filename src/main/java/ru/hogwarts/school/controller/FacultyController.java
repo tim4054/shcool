@@ -13,10 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/faculty")
 @Tag(name = "Контроллер факультетов")
-public class FacultyServiceController {
+public class FacultyController {
     private final FacultyService service;
 
-    public FacultyServiceController(FacultyService service) {
+    public FacultyController(FacultyService service) {
         this.service = service;
     }
 

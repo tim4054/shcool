@@ -29,4 +29,12 @@ public class Configuration {
                 pathsToMatch("/student/**").
                 build();
     }
+
+    @Bean
+    public GroupedOpenApi avatarGroup() {
+        return GroupedOpenApi.builder().
+                group("Контроллер аватарок").
+                pathsToMatch("/avatar/**").
+                build();
+    }
 }
