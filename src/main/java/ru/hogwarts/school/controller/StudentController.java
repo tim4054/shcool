@@ -28,7 +28,7 @@ public class StudentController {
         return ResponseEntity.ok(createdStudent);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     @Operation(summary = "Поиск студента",
             description = "Поиск по Id")
     public ResponseEntity<Student> findStudentById(@PathVariable Long id) {
@@ -39,7 +39,7 @@ public class StudentController {
         return ResponseEntity.ok(findStudentById);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     @Operation(summary = "Редактирование студента",
             description = "Редактирование по Id")
     public Student updateStudent(@PathVariable long id,
@@ -47,7 +47,7 @@ public class StudentController {
         return service.updateStudent(id, studentForUpdate);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     @Operation(summary = "Удаление студента",
             description = "Удаление по Id")
     public Student deleteStudent(@PathVariable long id) {

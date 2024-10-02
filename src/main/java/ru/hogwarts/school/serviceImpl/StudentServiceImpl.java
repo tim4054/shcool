@@ -19,7 +19,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student createStudent(Student student) {
-        return studentRepository.save(student);
+        Student savedStudent = studentRepository.save(student);
+        return studentRepository.findById(savedStudent.getId()).get();
     }
 
     @Override
