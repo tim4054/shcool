@@ -193,4 +193,5 @@ class StudentControllerMockMvcTest {
                 .andExpect(jsonPath("$.name").value("Griffyndor"))
                 .andExpect(jsonPath("$.color").value("Red"));
     }
+
 }
