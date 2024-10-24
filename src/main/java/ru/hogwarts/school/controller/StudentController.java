@@ -1,0 +1,100 @@
+package ru.hogwarts.school.controller;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.service.StudentService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/student")
+@Tag(name = "Контроллер студентов")
+public class StudentController {
+    private final StudentService service;
+
+    public StudentController(StudentService service) {
+        this.service = service;
+    }
+
+    @PostMapping("/add")
+    @Operation(summary = "Добавление студента",
+            description = "Id проставляется из репозитория")
+    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
+        Student createdStudent = service.createStudent(student);
+        return ResponseEntity.ok(createdStudent);
+    }
+
+    @GetMapping("/find/{id}")
+    @Operation(summary = "Поиск студента",
+            description = "Поиск по Id")
+    public ResponseEntity<Student> findStudentById(@PathVariable Long id) {
+        Student findStudentById = service.findStudent(id);
+        if (findStudentById == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(findStudentById);
+    }
+
+    @PutMapping("update/{id}")
+    @Operation(summary = "Редактирование студента",
+            description = "Редактирование по Id")
+    public Student updateStudent(@PathVariable long id,
+                                 @RequestBody Student studentForUpdate) {
+        return service.updateStudent(id, studentForUpdate);
+    }
+
+    @DeleteMapping("delete/{id}")
+    @Operation(summary = "Удаление студента",
+            description = "Удаление по Id")
+    public Student deleteStudent(@PathVariable long id) {
+        return service.deleteStudent(id);
+    }
+
+    @GetMapping("/get-by-age/{age}")
+    @Operation(summary = "Поиск студентов по возрасту",
+            description = "Показывает всех студентов, соответсвующих возрасту запроса")
+    public ResponseEntity<List<Student>> getAllStudentsByAge(@PathVariable int age) {
+        List<Student> findStudents = service.getStudentsByAge(age);
+        if (findStudents == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(findStudents);
+    }
+
+    @GetMapping("/get-by-age-between")
+    @Operation(summary = "Поиск студентов по возрастному инетервалу",
+            description = "Показывает всех студентов, соответсвующих возрастному инетервалу запроса")
+    public List<Student> findByAgeBetween(@RequestParam(name = "Минимальный возраст") int minAge,
+                                          @RequestParam(name = "Максимальный возраст") int maxAge) {
+        return service.findByAgeBetween(minAge, maxAge);
+    }
+
+    @GetMapping("/{id}/get-faculty")
+    @Operation(summary = "Возвращает факультет студента",
+            description = "По id студента возвращает факультет")
+    public Faculty getFaculty(@PathVariable long id) {
+        return service.getFaculty(id);
+    }
+
+    @GetMapping("/get-students-amount")
+    @Operation(summary = "Возвращает число всех студентов")
+    public int getStudentsAmount() {
+        return service.getStudentsAmount();
+    }
+
+    @GetMapping("get-average-age")
+    @Operation(summary = "Возвращает средний возраст всех студентов")
+    public float getStudentsAverageAge() {
+        return service.getStudentsAverageAge();
+    }
+
+    @GetMapping("get-five-last-students")
+    @Operation(summary = "Возвращает пять последних студентов")
+    public List<Student> getFiveLastStudents() {
+        return service.getFiveLastStudents();
+    }
+}
