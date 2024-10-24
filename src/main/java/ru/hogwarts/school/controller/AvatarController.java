@@ -11,6 +11,7 @@ import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.service.AvatarService;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/avatar")
@@ -45,5 +46,13 @@ public class AvatarController {
             description = "Из локального хранилища")
     public byte[] getAvatarFromLocal(@RequestParam("studentId") long studentId) throws IOException {
         return avatarService.getAvatarFromLocal(studentId);
+    }
+
+    @GetMapping(path = "/get-avatars", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Получение аватарок",
+            description = "Постранично")
+    public List<byte[]> getAvatars(@RequestParam("pageNumber") int pageNumber,
+                                   @RequestParam("pageSize") int pageSize) {
+        return avatarService.getAvatars(pageNumber, pageSize);
     }
 }

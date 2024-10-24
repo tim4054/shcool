@@ -79,4 +79,22 @@ public class StudentController {
     public Faculty getFaculty(@PathVariable long id) {
         return service.getFaculty(id);
     }
+
+    @GetMapping("/get-students-amount")
+    @Operation(summary = "Возвращает число всех студентов")
+    public int getStudentsAmount() {
+        return service.getStudentsAmount();
+    }
+
+    @GetMapping("get-average-age")
+    @Operation(summary = "Возвращает средний возраст всех студентов")
+    public float getStudentsAverageAge() {
+        return service.getStudentsAverageAge();
+    }
+
+    @GetMapping("get-five-last-students")
+    @Operation(summary = "Возвращает пять последних студентов")
+    public List<Student> getFiveLastStudents() {
+        return service.getFiveLastStudents();
+    }
 }

@@ -1,6 +1,7 @@
 package ru.hogwarts.school.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.Exception.AvatarNotFoundException;
@@ -16,6 +17,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AvatarServiceImpl implements AvatarService {
@@ -87,6 +91,17 @@ public class AvatarServiceImpl implements AvatarService {
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(filePath))) {
             return bufferedInputStream.readAllBytes();
         }
+    }
+
+    @Override
+    public List<byte[]> getAvatars(int pageNumber, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
+        List<byte[]> bytesAvatars = new ArrayList<>();
+        List<Avatar> avatars = avatarRepository.findAll(pageRequest).getContent();
+        for (Avatar avatar : avatars) {
+            bytesAvatars.add(avatar.getData());
+        }
+        return bytesAvatars;
     }
 
     void studentExist(long studentId) {
