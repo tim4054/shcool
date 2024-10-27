@@ -13,5 +13,6 @@ public interface AvatarService {
 
     byte[] getAvatarFromLocal(long studentId) throws IOException;
 
-    List<byte[]> getAvatars(int pageNumber, int pageSize);
+
+    List<Avatar> getAvatarsFromDBWithPagination(Integer numberOfPage, Integer sizeOfPage);
 }

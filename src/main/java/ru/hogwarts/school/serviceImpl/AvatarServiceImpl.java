@@ -94,14 +94,9 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     @Override
-    public List<byte[]> getAvatars(int pageNumber, int pageSize) {
+    public List<Avatar> getAvatarsFromDBWithPagination(Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
-        List<byte[]> bytesAvatars = new ArrayList<>();
-        List<Avatar> avatars = avatarRepository.findAll(pageRequest).getContent();
-        for (Avatar avatar : avatars) {
-            bytesAvatars.add(avatar.getData());
-        }
-        return bytesAvatars;
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 
     void studentExist(long studentId) {

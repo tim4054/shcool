@@ -2,6 +2,8 @@ package ru.hogwarts.school.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,9 @@ import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.service.AvatarService;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -48,11 +53,28 @@ public class AvatarController {
         return avatarService.getAvatarFromLocal(studentId);
     }
 
-    @GetMapping(path = "/get-avatars", produces = MediaType.IMAGE_JPEG_VALUE)
-    @Operation(summary = "Получение аватарок",
+    @GetMapping("/with-pagination")
+    @Operation(summary = "Получение аватарок with-pagination",
             description = "Постранично")
-    public List<byte[]> getAvatars(@RequestParam("pageNumber") int pageNumber,
-                                   @RequestParam("pageSize") int pageSize) {
-        return avatarService.getAvatars(pageNumber, pageSize);
+    public ResponseEntity<?> getAvatarsFromDBWithPagination(@RequestParam(defaultValue = "0") Integer numberOfPage, @RequestParam(defaultValue = "1") Integer sizeOfPage, HttpServletResponse response) throws IOException {
+        List<Avatar> avatars = avatarService.getAvatarsFromDBWithPagination(numberOfPage, sizeOfPage);
+
+        if (avatars.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<ResponseEntity<byte[]>> responses = new ArrayList<>();
+
+        for (Avatar avatar : avatars) {
+            Path path = Path.of(avatar.getFilePath());
+            byte[] content = Files.readAllBytes(path);
+
+            responses.add(ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(avatar.getMediaType()))
+                    .contentLength(avatar.getFileSize())
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+                    .body(content));
+        }
+        return ResponseEntity.ok(responses);
     }
 }
