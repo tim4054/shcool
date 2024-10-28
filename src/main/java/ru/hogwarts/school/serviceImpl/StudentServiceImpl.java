@@ -75,5 +75,15 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> getFiveLastStudents() {
         return studentRepository.getFiveLastStudents();
     }
+
+    @Override
+    public Student findStudentByName(String name) {
+        return studentRepository.getStudentByName(name);
+    }
+
+    @Override
+    public List<Student> findStudentByFacultyNameColor(String name, String color) {
+        return studentRepository.findByFacultyNameAndFacultyColor(name, color);
+    }
 }
 

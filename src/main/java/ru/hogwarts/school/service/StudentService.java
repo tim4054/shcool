@@ -25,4 +25,8 @@ public interface StudentService {
     float getStudentsAverageAge();
 
     List<Student> getFiveLastStudents();
+
+    Student findStudentByName(String name);
+
+    List<Student> findStudentByFacultyNameColor(String name, String color);
 }

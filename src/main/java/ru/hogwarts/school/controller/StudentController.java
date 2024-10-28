@@ -97,4 +97,25 @@ public class StudentController {
     public List<Student> getFiveLastStudents() {
         return service.getFiveLastStudents();
     }
+
+    @GetMapping("/find/by-name/{name}")
+    @Operation(summary = "Поиск студента по имени")
+    public ResponseEntity<Student> findStudentByName(@PathVariable("name") String name) {
+        Student findedStudentByName = service.findStudentByName(name);
+        if (findedStudentByName == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(findedStudentByName);
+    }
+
+    @GetMapping("/find/by-faculty-name-and-color")
+    @Operation(summary = "Поиск студента по названию и цвету факультета")
+    public ResponseEntity<List<Student>> findStudentByFacultyNameColor(@RequestParam("Имя факультета") String name,
+                                                                 @RequestParam("Цвет факультета") String color) {
+        List<Student> findedStudentByFacultyNameColor = service.findStudentByFacultyNameColor(name, color);
+        if (findedStudentByFacultyNameColor == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(findedStudentByFacultyNameColor);
+    }
 }
