@@ -18,4 +18,3 @@ age INTEGER DEFAULT 20);
 
 
 
-
