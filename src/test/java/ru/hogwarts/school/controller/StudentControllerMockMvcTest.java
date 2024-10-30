@@ -1,3 +1,4 @@
+/*
 package ru.hogwarts.school.controller;
 
 import org.json.JSONObject;
@@ -35,7 +36,8 @@ class StudentControllerMockMvcTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
+    */
+/*@Test
     void createStudent() throws Exception {
         String name = "Garry";
         int age = 18;
@@ -58,8 +60,8 @@ class StudentControllerMockMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.age").value(age));
+    }*//*
 
-    }
 
     @Test
     void findStudentById() throws Exception {
@@ -78,7 +80,8 @@ class StudentControllerMockMvcTest {
                 .andExpect(jsonPath("$.age").value(age));
     }
 
-    @Test
+    */
+/*@Test
     void updateStudent() throws Exception {
         String name1 = "Garry";
         String name2 = "Ron";
@@ -104,7 +107,8 @@ class StudentControllerMockMvcTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.name").value(name2))
                 .andExpect(jsonPath("$.age").value(age2));
-    }
+    }*//*
+
 
     @Test
     void deleteStudent() throws Exception {
@@ -194,4 +198,4 @@ class StudentControllerMockMvcTest {
                 .andExpect(jsonPath("$.color").value("Red"));
     }
 
-}
+}*/

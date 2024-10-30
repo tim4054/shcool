@@ -54,17 +54,6 @@ public class StudentController {
         return service.deleteStudent(id);
     }
 
-    @GetMapping("/get-by-age/{age}")
-    @Operation(summary = "Поиск студентов по возрасту",
-            description = "Показывает всех студентов, соответсвующих возрасту запроса")
-    public ResponseEntity<List<Student>> getAllStudentsByAge(@PathVariable int age) {
-        List<Student> findStudents = service.getStudentsByAge(age);
-        if (findStudents == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(findStudents);
-    }
-
     @GetMapping("/get-by-age-between")
     @Operation(summary = "Поиск студентов по возрастному инетервалу",
             description = "Показывает всех студентов, соответсвующих возрастному инетервалу запроса")

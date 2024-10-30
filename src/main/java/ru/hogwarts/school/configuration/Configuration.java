@@ -37,4 +37,12 @@ public class Configuration {
                 pathsToMatch("/avatar/**").
                 build();
     }
+
+    @Bean
+    public GroupedOpenApi infoGroup() {
+        return GroupedOpenApi.builder().
+                group("Контроллер info").
+                pathsToMatch("/info/**").
+                build();
+    }
 }
