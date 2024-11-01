@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
@@ -28,4 +29,7 @@ public interface StudentService {
     Student findStudentByName(String name);
 
     List<Student> findStudentByFacultyNameColor(String name, String color);
+    List<String> getNamesStartWithA();
+
+    double getStudentsAverageAgeByStream();
 }

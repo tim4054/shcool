@@ -78,4 +78,16 @@ public class FacultyController {
     public List<Student> studentsByFaculty(@PathVariable long id) {
         return service.findStudentsByFaculty(id);
     }
+
+    @GetMapping("/get-longest-tittle")
+    @Operation(summary = "Самое длинное название факультета")
+    public String getLongestFacultyTittle() {
+        return service.getLongestFacultyTittle();
+    }
+
+    @GetMapping("/get-sum-million")
+    @Operation(summary = "Вычисление суммы миллиона натуральных чисел")
+    public Integer getSumMillion() {
+        return service.getSumMillion();
+    }
 }

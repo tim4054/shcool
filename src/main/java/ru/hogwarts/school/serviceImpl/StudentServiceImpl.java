@@ -2,6 +2,7 @@ package ru.hogwarts.school.serviceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.Exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Faculty;
@@ -10,6 +11,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -25,7 +27,7 @@ public class StudentServiceImpl implements StudentService {
     public Student createStudent(Student student) {
         Student savedStudent = studentRepository.save(student);
         logger.info("Добавляется студент с id:{}", savedStudent.getId());
-        return studentRepository.findById(savedStudent.getId()).get();
+        return savedStudent;
     }
 
     @Override
@@ -100,5 +102,29 @@ public class StudentServiceImpl implements StudentService {
         logger.info("Вызван метод отображения поска студента по имени и цвету факультета");
         return studentRepository.findByFacultyNameAndFacultyColor(name, color);
     }
+
+    @Override
+    public List<String> getNamesStartWithA() {
+        logger.info("Вызван метод отображения списка имен на А через стрим");
+        return studentRepository.findAll().stream()
+                .parallel()
+                .map(Student::getName)
+                .map(String::toUpperCase)
+                .filter(s -> s.startsWith("А"))
+                .sorted()
+                .toList();
+    }
+
+    @Override
+    public double getStudentsAverageAgeByStream() {
+        logger.info("Вызван метод отображения среднего возраста через стрим");
+        return  studentRepository.findAll().stream()
+                .parallel()
+                .map(Student::getAge)
+                .mapToDouble(Integer::doubleValue)
+                .average()
+                .orElse(0.0);
+    }
 }
+
 

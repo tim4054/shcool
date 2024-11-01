@@ -1,4 +1,3 @@
-/*
 package ru.hogwarts.school.controller;
 
 import org.json.JSONObject;
@@ -36,22 +35,26 @@ class StudentControllerMockMvcTest {
     @Autowired
     private MockMvc mockMvc;
 
-    */
-/*@Test
+    @Test
     void createStudent() throws Exception {
         String name = "Garry";
         int age = 18;
         Faculty faculty = new Faculty("Griffyndor", "Red");
         faculty.setId(1L);
-        Student expected = new Student(name, age);
-        expected.setId(1L);
-        expected.setFaculty(faculty);
-        when(studentRepository.save(expected)).thenReturn(expected);
+        Student student = new Student(name, age);
+        student.setId(1L);
+        student.setFaculty(faculty);
+        when(studentRepository.save(student)).thenReturn(student);
+
+        JSONObject facultyObject = new JSONObject();
+        facultyObject.put("id", faculty.getId());
+        facultyObject.put("name", faculty.getName());
+        facultyObject.put("color", faculty.getColor());
 
         JSONObject studentObject = new JSONObject();
         studentObject.put("name", name);
         studentObject.put("age", age);
-        studentObject.put("faculty", faculty);
+        studentObject.put("faculty", facultyObject);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/student/add")
                         .content(studentObject.toString())
@@ -60,7 +63,7 @@ class StudentControllerMockMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.age").value(age));
-    }*//*
+    }
 
 
     @Test
@@ -80,8 +83,7 @@ class StudentControllerMockMvcTest {
                 .andExpect(jsonPath("$.age").value(age));
     }
 
-    */
-/*@Test
+    @Test
     void updateStudent() throws Exception {
         String name1 = "Garry";
         String name2 = "Ron";
@@ -107,7 +109,7 @@ class StudentControllerMockMvcTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.name").value(name2))
                 .andExpect(jsonPath("$.age").value(age2));
-    }*//*
+    }
 
 
     @Test
@@ -198,4 +200,4 @@ class StudentControllerMockMvcTest {
                 .andExpect(jsonPath("$.color").value("Red"));
     }
 
-}*/
+}

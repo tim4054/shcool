@@ -100,11 +100,23 @@ public class StudentController {
     @GetMapping("/find/by-faculty-name-and-color")
     @Operation(summary = "Поиск студента по названию и цвету факультета")
     public ResponseEntity<List<Student>> findStudentByFacultyNameColor(@RequestParam("Имя факультета") String name,
-                                                                 @RequestParam("Цвет факультета") String color) {
+                                                                       @RequestParam("Цвет факультета") String color) {
         List<Student> findedStudentByFacultyNameColor = service.findStudentByFacultyNameColor(name, color);
         if (findedStudentByFacultyNameColor == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(findedStudentByFacultyNameColor);
+    }
+
+    @GetMapping("/get-names-begin-a")
+    @Operation(summary = "Список имен на букву А")
+    public ResponseEntity<List<String>> getNamesStartWithA() {
+        return ResponseEntity.ok(service.getNamesStartWithA());
+    }
+
+    @GetMapping("/get-average-age-by-stream")
+    @Operation(summary = "Возвращает средний возраст всех студентов через стрим")
+    public double getStudentsAverageAgeByStream() {
+        return service.getStudentsAverageAgeByStream();
     }
 }
