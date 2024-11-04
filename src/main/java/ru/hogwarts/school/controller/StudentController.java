@@ -119,4 +119,17 @@ public class StudentController {
     public double getStudentsAverageAgeByStream() {
         return service.getStudentsAverageAgeByStream();
     }
+
+    @GetMapping("/print-parallel")
+    @Operation(summary = " Выводит в консоль имена всех студентов в параллельном режиме")
+    public void getStudentNamesParallel() {
+        service.getStudentNamesParallel();
+    }
+
+    @GetMapping("/print-synchronized")
+    @Operation(summary = " Выводит в консоль имена всех студентов в синхронном режиме")
+    public void getStudentNamesSynchronized() {
+        service.getStudentNamesSynchronized();
+    }
 }
+

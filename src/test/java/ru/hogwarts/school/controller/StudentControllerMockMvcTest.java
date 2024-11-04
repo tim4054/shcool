@@ -45,6 +45,7 @@ class StudentControllerMockMvcTest {
         student.setId(1L);
         student.setFaculty(faculty);
         when(studentRepository.save(student)).thenReturn(student);
+        when(studentService.createStudent(student)).thenReturn(student);
 
         JSONObject facultyObject = new JSONObject();
         facultyObject.put("id", faculty.getId());
@@ -200,4 +201,23 @@ class StudentControllerMockMvcTest {
                 .andExpect(jsonPath("$.color").value("Red"));
     }
 
+    @Test
+    public void getStudentNamesParallel() throws Exception {
+        when(studentRepository.findById(1L).orElseThrow().getName()).thenReturn("Первый");
+        when(studentRepository.findById(2L).orElseThrow().getName()).thenReturn("Второй");
+        when(studentRepository.findById(3L).orElseThrow().getName()).thenReturn("Третий");
+        when(studentRepository.findById(4L).orElseThrow().getName()).thenReturn("Четвертый");
+        when(studentRepository.findById(5L).orElseThrow().getName()).thenReturn("Пятый");
+        when(studentRepository.findById(6L).orElseThrow().getName()).thenReturn("Шестой");
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/student/print-parallel"))
+                .andExpect(status().isOk());
+
+        verify(studentRepository, times(1)).findById(1L);
+        verify(studentRepository, times(1)).findById(2L);
+        verify(studentRepository, times(1)).findById(3L);
+        verify(studentRepository, times(1)).findById(4L);
+        verify(studentRepository, times(1)).findById(5L);
+        verify(studentRepository, times(1)).findById(6L);
+    }
 }

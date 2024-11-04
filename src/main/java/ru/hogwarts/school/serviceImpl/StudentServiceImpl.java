@@ -23,6 +23,8 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepository = studentRepository;
     }
 
+    public final Object flag = new Object();
+
     @Override
     public Student createStudent(Student student) {
         Student savedStudent = studentRepository.save(student);
@@ -61,7 +63,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
 
-
     @Override
     public List<Student> findByAgeBetween(int minAge, int maxAge) {
         logger.info("Отображение списка студентов в возрасте от " + minAge + " до " + maxAge);
@@ -85,6 +86,7 @@ public class StudentServiceImpl implements StudentService {
         logger.info("Вызван метод отображения среднего возраста студентов");
         return studentRepository.getStudentsAverageAge();
     }
+
     @Override
     public List<Student> getFiveLastStudents() {
         logger.info("Вызван метод отображения пяти последних студентов");
@@ -118,12 +120,50 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public double getStudentsAverageAgeByStream() {
         logger.info("Вызван метод отображения среднего возраста через стрим");
-        return  studentRepository.findAll().stream()
+        return studentRepository.findAll().stream()
                 .parallel()
                 .map(Student::getAge)
                 .mapToDouble(Integer::doubleValue)
                 .average()
                 .orElse(0.0);
+    }
+
+    @Override
+    public void getStudentNamesParallel() {
+        System.out.println(studentRepository.findById(1L).orElseThrow().getName());
+        System.out.println(studentRepository.findById(2L).orElseThrow().getName());
+
+        new Thread(() -> {
+            System.out.println(studentRepository.findById(3L).orElseThrow().getName());
+            System.out.println(studentRepository.findById(4L).orElseThrow().getName());
+        }).start();
+
+        new Thread(() -> {
+            System.out.println(studentRepository.findById(5L).orElseThrow().getName());
+            System.out.println(studentRepository.findById(6L).orElseThrow().getName());
+        }).start();
+    }
+
+    @Override
+    public void getStudentNamesSynchronized() {
+        printNamesSynchronized(1L);
+        printNamesSynchronized(2L);
+
+        new Thread(() -> {
+            printNamesSynchronized(3L);
+            printNamesSynchronized(4L);
+        }).start();
+
+        new Thread(() -> {
+            printNamesSynchronized(5L);
+            printNamesSynchronized(6L);
+        }).start();
+    }
+
+    public void printNamesSynchronized (long id) {
+        synchronized (flag) {
+            System.out.println(studentRepository.findById(id).orElseThrow().getName());
+        }
     }
 }
 
