@@ -54,17 +54,6 @@ public class StudentController {
         return service.deleteStudent(id);
     }
 
-    @GetMapping("/get-by-age/{age}")
-    @Operation(summary = "Поиск студентов по возрасту",
-            description = "Показывает всех студентов, соответсвующих возрасту запроса")
-    public ResponseEntity<List<Student>> getAllStudentsByAge(@PathVariable int age) {
-        List<Student> findStudents = service.getStudentsByAge(age);
-        if (findStudents == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(findStudents);
-    }
-
     @GetMapping("/get-by-age-between")
     @Operation(summary = "Поиск студентов по возрастному инетервалу",
             description = "Показывает всех студентов, соответсвующих возрастному инетервалу запроса")
@@ -111,11 +100,36 @@ public class StudentController {
     @GetMapping("/find/by-faculty-name-and-color")
     @Operation(summary = "Поиск студента по названию и цвету факультета")
     public ResponseEntity<List<Student>> findStudentByFacultyNameColor(@RequestParam("Имя факультета") String name,
-                                                                 @RequestParam("Цвет факультета") String color) {
+                                                                       @RequestParam("Цвет факультета") String color) {
         List<Student> findedStudentByFacultyNameColor = service.findStudentByFacultyNameColor(name, color);
         if (findedStudentByFacultyNameColor == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(findedStudentByFacultyNameColor);
     }
+
+    @GetMapping("/get-names-begin-a")
+    @Operation(summary = "Список имен на букву А")
+    public ResponseEntity<List<String>> getNamesStartWithA() {
+        return ResponseEntity.ok(service.getNamesStartWithA());
+    }
+
+    @GetMapping("/get-average-age-by-stream")
+    @Operation(summary = "Возвращает средний возраст всех студентов через стрим")
+    public double getStudentsAverageAgeByStream() {
+        return service.getStudentsAverageAgeByStream();
+    }
+
+    @GetMapping("/print-parallel")
+    @Operation(summary = " Выводит в консоль имена всех студентов в параллельном режиме")
+    public void getStudentNamesParallel() {
+        service.getStudentNamesParallel();
+    }
+
+    @GetMapping("/print-synchronized")
+    @Operation(summary = " Выводит в консоль имена всех студентов в синхронном режиме")
+    public void getStudentNamesSynchronized() {
+        service.getStudentNamesSynchronized();
+    }
 }
+

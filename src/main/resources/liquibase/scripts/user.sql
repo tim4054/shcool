@@ -4,4 +4,5 @@
 CREATE INDEX student_name_index ON student (name);
 
 -- changeset tnugumanov:2
-CREATE INDEX student_facultync_idx ON faculty (name, color);
+CREATE INDEX student_faculty  n
+   c_idx ON faculty (name, col or);

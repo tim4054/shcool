@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
@@ -14,7 +15,6 @@ public interface StudentService {
 
     Student deleteStudent(long id);
 
-    List<Student> getStudentsByAge(int age);
 
     List<Student> findByAgeBetween(int minAge, int maxAge);
 
@@ -29,4 +29,11 @@ public interface StudentService {
     Student findStudentByName(String name);
 
     List<Student> findStudentByFacultyNameColor(String name, String color);
+    List<String> getNamesStartWithA();
+
+    double getStudentsAverageAgeByStream();
+
+    void getStudentNamesParallel();
+
+    void getStudentNamesSynchronized();
 }

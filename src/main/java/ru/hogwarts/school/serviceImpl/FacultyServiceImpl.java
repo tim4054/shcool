@@ -8,10 +8,8 @@ import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.FacultyService;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
 @Service
 public class FacultyServiceImpl implements FacultyService {
@@ -68,5 +66,20 @@ public class FacultyServiceImpl implements FacultyService {
         return studentRepository.findByFacultyId(id);
     }
 
+    @Override
+    public String getLongestFacultyTittle() {
+        return facultyRepository.findAll().stream()
+                .parallel()
+                .map(Faculty::getName)
+                .max(Comparator.comparingInt(String::length))
+                .orElseThrow();
+    }
+
+    @Override
+    public Integer getSumMillion() {
+        return IntStream.rangeClosed(1, 1_000_000)
+                .parallel()
+                .sum();
+    }
 }
 

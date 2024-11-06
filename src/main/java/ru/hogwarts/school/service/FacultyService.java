@@ -19,5 +19,9 @@ public interface FacultyService {
     List<Faculty> findFacultyByColorOrName(String color, String name);
 
     List<Student> findStudentsByFaculty(long id);
+
+    String getLongestFacultyTittle();
+
+    Integer getSumMillion();
 }
 
