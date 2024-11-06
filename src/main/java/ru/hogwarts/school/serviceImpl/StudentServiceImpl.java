@@ -1,5 +1,6 @@
 package ru.hogwarts.school.serviceImpl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -95,13 +95,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student findStudentByName(String name) {
-        logger.info("Вызван метод отображения поска студента по имени");
+        logger.info("Вызван метод поиска студента по имени");
         return studentRepository.getStudentByName(name);
     }
 
     @Override
     public List<Student> findStudentByFacultyNameColor(String name, String color) {
-        logger.info("Вызван метод отображения поска студента по имени и цвету факультета");
+        logger.info("Вызван метод поиска студентов по имени и цвету факультета");
         return studentRepository.findByFacultyNameAndFacultyColor(name, color);
     }
 
@@ -111,7 +111,7 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findAll().stream()
                 .parallel()
                 .map(Student::getName)
-                .map(String::toUpperCase)
+                .map((StringUtils::capitalize))
                 .filter(s -> s.startsWith("А"))
                 .sorted()
                 .toList();
@@ -122,8 +122,7 @@ public class StudentServiceImpl implements StudentService {
         logger.info("Вызван метод отображения среднего возраста через стрим");
         return studentRepository.findAll().stream()
                 .parallel()
-                .map(Student::getAge)
-                .mapToDouble(Integer::doubleValue)
+                .mapToInt(Student::getAge)
                 .average()
                 .orElse(0.0);
     }
@@ -160,7 +159,7 @@ public class StudentServiceImpl implements StudentService {
         }).start();
     }
 
-    public void printNamesSynchronized (long id) {
+    public void printNamesSynchronized(long id) {
         synchronized (flag) {
             System.out.println(studentRepository.findById(id).orElseThrow().getName());
         }

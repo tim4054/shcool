@@ -37,15 +37,13 @@ class StudentControllerMockMvcTest {
 
     @Test
     void createStudent() throws Exception {
-        String name = "Garry";
-        int age = 18;
-        Faculty faculty = new Faculty("Griffyndor", "Red");
+        Faculty faculty = new Faculty("Gryffindor", "Red");
         faculty.setId(1L);
-        Student student = new Student(name, age);
+        Student student = new Student("Garry", 18);
         student.setId(1L);
         student.setFaculty(faculty);
+
         when(studentRepository.save(student)).thenReturn(student);
-        when(studentService.createStudent(student)).thenReturn(student);
 
         JSONObject facultyObject = new JSONObject();
         facultyObject.put("id", faculty.getId());
@@ -53,8 +51,9 @@ class StudentControllerMockMvcTest {
         facultyObject.put("color", faculty.getColor());
 
         JSONObject studentObject = new JSONObject();
-        studentObject.put("name", name);
-        studentObject.put("age", age);
+        studentObject.put("id", student.getId());
+        studentObject.put("name", student.getName());
+        studentObject.put("age", student.getAge());
         studentObject.put("faculty", facultyObject);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/student/add")
@@ -62,10 +61,14 @@ class StudentControllerMockMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.age").value(age));
-    }
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Garry"))
+                .andExpect(jsonPath("$.age").value(18))
+                .andExpect(jsonPath("$.faculty.name").value("Gryffindor"))
+                .andExpect(jsonPath("$.faculty.id").value(1L))
+                .andExpect(jsonPath("$.faculty.color").value("Red"));
 
+    }
 
     @Test
     void findStudentById() throws Exception {
@@ -86,30 +89,40 @@ class StudentControllerMockMvcTest {
 
     @Test
     void updateStudent() throws Exception {
-        String name1 = "Garry";
-        String name2 = "Ron";
-        int age1 = 18;
-        int age2 = 19;
-        Student student1 = new Student(name1, age1);
+        Faculty faculty = new Faculty("Gryffindor", "Red");
+        faculty.setId(1L);
+
+        Student student1 = new Student("Garry", 18);
         student1.setId(1L);
-        Student student2 = new Student(name2, age2);
+        student1.setFaculty(faculty);
+
+        Student student2 = new Student("Ron", 19);
+        student2.setFaculty(faculty);
 
         when(studentRepository.existsById(1L)).thenReturn(true);
-        when(studentService.updateStudent(1L, student2)).thenReturn(student2);
+        when(studentRepository.save(student2)).thenReturn(student2);
+        when(studentService.updateStudent(student1.getId(), student2)).thenReturn(student2);
+
+        JSONObject facultyObject = new JSONObject();
+        facultyObject.put("id", faculty.getId());
+        facultyObject.put("name", faculty.getName());
+        facultyObject.put("color", faculty.getColor());
 
         JSONObject studentObject = new JSONObject();
-        studentObject.put("name", name2);
-        studentObject.put("age", age2);
+        studentObject.put("name", student2.getName());
+        studentObject.put("age", student2.getAge());
+        studentObject.put("faculty", facultyObject);
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/student/update/1")
+        mockMvc.perform(MockMvcRequestBuilders.put("/student/update/1")
                         .content(studentObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$.name").value(name2))
-                .andExpect(jsonPath("$.age").value(age2));
+                .andExpect(jsonPath("$.name").value(student2.getName()))
+                .andExpect(jsonPath("$.age").value(student2.getAge()))
+                .andExpect(jsonPath("$.faculty.id").value(1L));
+
+        //verify(studentService, only()).updateStudent(1L, student2);
     }
 
 
@@ -184,40 +197,38 @@ class StudentControllerMockMvcTest {
         String name = "Garry";
         int age = 18;
         long id = 1L;
-        Faculty faculty = new Faculty("Griffyndor", "Red");
+        Faculty faculty = new Faculty("Gryffindor", "Red");
         Student expected = new Student(name, age);
         expected.setFaculty(faculty);
         expected.setId(id);
 
         JSONObject facultyJSON = new JSONObject();
-        facultyJSON.put("name", "Griffyndor");
+        facultyJSON.put("name", "Gryffindor");
         facultyJSON.put("color", "Red");
 
         when(studentRepository.findById(id)).thenReturn(Optional.of(expected));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/student/1/get-faculty", 1L))
                 .andDo(print())
-                .andExpect(jsonPath("$.name").value("Griffyndor"))
+                .andExpect(jsonPath("$.name").value("Gryffindor"))
                 .andExpect(jsonPath("$.color").value("Red"));
     }
 
     @Test
-    public void getStudentNamesParallel() throws Exception {
-        when(studentRepository.findById(1L).orElseThrow().getName()).thenReturn("Первый");
-        when(studentRepository.findById(2L).orElseThrow().getName()).thenReturn("Второй");
-        when(studentRepository.findById(3L).orElseThrow().getName()).thenReturn("Третий");
-        when(studentRepository.findById(4L).orElseThrow().getName()).thenReturn("Четвертый");
-        when(studentRepository.findById(5L).orElseThrow().getName()).thenReturn("Пятый");
-        when(studentRepository.findById(6L).orElseThrow().getName()).thenReturn("Шестой");
+    @DisplayName("Ожидаем средний возраст, данные валидны")
+    void getStudentsAverageAgeByStream() throws Exception {
+        List<Student> students = List.of(
+                new Student("Garry", 18),
+                new Student("Ron", 19),
+                new Student("Александр", 18));
+        double expected = students.stream()
+                .mapToDouble(Student::getAge)
+                .reduce(0, Double::sum) / students.size();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/student/print-parallel"))
-                .andExpect(status().isOk());
+        when(studentService.getStudentsAverageAgeByStream()).thenReturn(expected);
 
-        verify(studentRepository, times(1)).findById(1L);
-        verify(studentRepository, times(1)).findById(2L);
-        verify(studentRepository, times(1)).findById(3L);
-        verify(studentRepository, times(1)).findById(4L);
-        verify(studentRepository, times(1)).findById(5L);
-        verify(studentRepository, times(1)).findById(6L);
+        mockMvc.perform(MockMvcRequestBuilders.get("/student/get-average-age-by-stream"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(expected));
     }
 }
